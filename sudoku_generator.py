@@ -1,3 +1,6 @@
+#sudoku_generator
+#copyright: fiorezhang@sina.com
+
 import numpy as np
 
 #calculate the remainder for x in range: 1~y
@@ -196,7 +199,7 @@ def generator(size, visible):
 			
 	m = shuffle(m)
 	n = mask(m, v)
-	return (m, n)
+	return (n, m)
 
 ####test functions
 '''

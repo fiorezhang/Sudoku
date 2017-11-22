@@ -9,9 +9,10 @@ from sudoku_dataset import load_data as load
 
 #global variables for sudoku training/test data set
 MATRIX_SIZE = 4
-VISIBLE = 0.75
-TRAIN_SIZE = 10000
-TEST_SIZE = 1000
+TRAIN_VISIBLE = 0.7
+TEST_VISIBLE = 0.7
+TRAIN_SIZE = 1000
+TEST_SIZE = 100
 
 #transfer matrix to a one-hot serial
 def oh_encode(m):
@@ -39,13 +40,14 @@ def oh_decode(c):
 #generate matrix from sudoku generator/dataset functions	
 print('-'*50),
 print('Generating Data... '),
-print('Matrix size: ', MATRIX_SIZE, ', visible percentage: ', VISIBLE*100, '%'),
+print('Matrix size: ', MATRIX_SIZE, ', visible(train): ', TRAIN_VISIBLE*100, '%, visible(test): ', TEST_VISIBLE*100, '%'),
 print('Train samples: ', TRAIN_SIZE, ', test samples: ', TEST_SIZE),
-(x_train_m, y_train_m), (x_test_m, y_test_m) = load(MATRIX_SIZE, VISIBLE, TRAIN_SIZE, TEST_SIZE)
+x_train_m, y_train_m = load(MATRIX_SIZE, TRAIN_VISIBLE, TRAIN_SIZE)
 x_train = np.zeros((TRAIN_SIZE, MATRIX_SIZE*MATRIX_SIZE, MATRIX_SIZE+1), dtype='int8')
 y_train = np.zeros((TRAIN_SIZE, MATRIX_SIZE*MATRIX_SIZE, MATRIX_SIZE+1), dtype='int8')
 for i in range (TRAIN_SIZE):
 	x_train[i], y_train[i] = oh_encode(x_train_m[i]), oh_encode(y_train_m[i])
+x_test_m, y_test_m = load(MATRIX_SIZE, TEST_VISIBLE, TEST_SIZE)
 x_test = np.zeros((TEST_SIZE, MATRIX_SIZE*MATRIX_SIZE, MATRIX_SIZE+1), dtype='int8')
 y_test = np.zeros((TEST_SIZE, MATRIX_SIZE*MATRIX_SIZE, MATRIX_SIZE+1), dtype='int8')
 for i in range (TEST_SIZE):
@@ -61,9 +63,9 @@ print('-'*50),
 
 #set parameters for keras model
 RNN = layers.LSTM
-HIDDEN_SIZE = 512
+HIDDEN_SIZE = 128
 BATCH_SIZE = 128
-LAYERS = 2
+LAYERS = 1
 
 #Build the RNN model
 print('-'*50),
@@ -78,6 +80,7 @@ for _ in range(LAYERS):
 	model.add(RNN(HIDDEN_SIZE, return_sequences=True))
 #add a dense layer with the s*s vector flattened, then 3D turn to 2D, need a catagory for each output number in matrix
 model.add(layers.TimeDistributed(layers.Dense(MATRIX_SIZE+1)))
+model.add(layers.Dropout(0.2))
 model.add(layers.Activation('softmax'))
 model.compile(loss='categorical_crossentropy',
               optimizer='adam',
@@ -88,13 +91,13 @@ print('-'*50),
 #train the model and print information during the process
 print('-'*50), 
 print('Training...'),
-for iteration in range(1, 100):
+for iteration in range(1, 500):
 	print(),
 	print('-'*50),
 	print('Iteration', iteration)
 	model.fit(x_train, y_train,
           batch_size=BATCH_SIZE,
-          epochs=1,
+          epochs=5,
           validation_data=(x_test, y_test))
 	#show result in the middle
 	for i in range(1): 
