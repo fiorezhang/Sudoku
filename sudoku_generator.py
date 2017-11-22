@@ -1,14 +1,15 @@
 import numpy as np
 
+#calculate the remainder for x in range: 1~y
+def remainder(x, y):
+	return (x-1)%y+1
 
+''' #comment out the original matrix generator as generate in a function
 #define the size of matrix
 SIZE = 3
 
 m_basic = np.zeros((SIZE * SIZE, SIZE * SIZE), dtype='int8')
-
-#calculate the remainder for x in range: 1~y
-def remainder(x, y):
-	return (x-1)%y+1
+'''
 
 '''too complicated, easier way as below
 #generate the 1st piece with SIZE * SIZE size
@@ -30,12 +31,14 @@ for k in range(SIZE):
 		for j in range(SIZE*SIZE):
 			m_basic[k*SIZE+i, j] = remainder((m_basic[i, j] + k), SIZE*SIZE)
 '''
-
+'''
 #generate one matrix which fulfill the sudoku rule, as the basic for others
 for i in range(SIZE*SIZE):
 	for j in range(SIZE*SIZE):
 		m_basic[i, j] = remainder((1 + SIZE*(i%SIZE) + int(i/SIZE) + j), SIZE*SIZE)
 #print(m_basic)
+'''
+
 
 '''define some functions to generate new matrix based from the original matrix, 
 	including swap rows within same bundle, or swap two bundles of rows, 
@@ -56,6 +59,7 @@ def swap_row(m, x, y):
 		m[x, j] = m[y, j]
 		m[y, j] = t[j]
 		
+	#print(m)
 	return m
 
 #swap bundles of rows, check the bundle number
@@ -74,6 +78,7 @@ def swap_row_b(m, x, y):
 			m[x*b+k, j] = m[y*b+k, j]
 			m[y*b+k, j] = t[j]
 			
+	#print(m)
 	return m
 
 #swap columns within a bundle, check the colunm number
@@ -91,6 +96,7 @@ def swap_col(m, x, y):
 		m[i, x] = m[i, y]
 		m[i, y] = t[i]
 		
+	#print(m)
 	return m
 
 #swap bundles of columns, check the bundle number
@@ -109,6 +115,7 @@ def swap_col_b(m, x, y):
 			m[i, x*b+k] = m[i, y*b+k]
 			m[i, y*b+k] = t[i]
 			
+	#print(m)
 	return m
 
 #remap 1~n in matrix into a random shuffled serial of 1~n, ex: [123456789]->[597326841]
@@ -120,28 +127,80 @@ def remap(m):
 	for i in range(s):
 		t[i] = i+1
 	np.random.shuffle(t)
-	print(t)
+	#print(t)
 	
 	for i in range(s):
 		for j in range(s):
 			n[i, j] = t[(m[i, j]-1)]
-			
+	
+	#print(n)		
 	return n
 	
+#shuffle a matrix with swap rows/columns and remap the cell
 def shuffle(m):
 	s = m.shape[0]
 	b = (int)(np.sqrt(s))
 	
+	m = remap(m)
+
+	for i in range(s):
+		l = np.random.randint(b, size=1)
+		[j, k] = np.random.randint(l*b, l*b+b, size=2)
+		#print(j, k)
+		if j != k:
+			m = swap_row(m, j, k)
+	
+	for i in range(b):
+		[j, k] = np.random.randint(b, size=2)
+		#print(j, k)
+		if j != k: 
+			m = swap_row_b(m, j, k)
+
+	for i in range(s):
+		l = np.random.randint(b, size=1)
+		[j, k] = np.random.randint(l*b, l*b+b, size=2)
+		#print(j, k)
+		if j != k:
+			m = swap_col(m, j, k)
+
+	for i in range(b):
+		[j, k] = np.random.randint(b, size=2)
+		#print(j, k)
+		if j != k:
+			m = swap_col_b(m, j, k)
+
 	return m
 
+#generate a matrix with some cell masked as 0, the visible cells close to the percentage given
+def mask(m, v):
+	s = m.shape[0]
+	
+	n = np.random.rand(s, s)
+	#print(n)
+	#o = np.where(n<=v, 1, 0) #calculate how many '1' in the sparse matrix
+	#print(o)
+	#print(o.sum(), "/", s*s, " -- ", o.sum()/(s*s), v)
+	m = np.where(n<=v, m, 0)
 
-######
-print(m_basic)
-print(remap(m_basic))	
+	return m
+
+#generate a pair of matrix, return the matrix and the masked matrix. Size: must be a square number, how many rows. Visible: a float within 0~1, percentage for how many visible(unmasked)
+def generator(size, visible):
+	s = size
+	v = visible
+	b = (int)(np.sqrt(s))
+	m = np.zeros((s, s), dtype='int8')
+	for i in range(s):
+		for j in range(s):
+			m[i, j] = remainder((1 + b*(i%b) + int(i/b) + j), s)
+			
+	m = shuffle(m)
+	n = mask(m, v)
+	return (m, n)
+
+####test functions
 '''
-print(m_basic),
-print(swap_row(m_basic, 6, 8)),
-print(swap_row_b(m_basic, 0, 2)),
-print(swap_col(m_basic, 0, 1)),
-print(swap_col_b(m_basic, 1, 2)),
+ans, que = generator(9, 0.9)
+print(ans),
+print(que),
 '''
