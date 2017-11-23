@@ -54,7 +54,7 @@ def swap_row(m, x, y):
 	t = np.zeros(s)#use to buffer the data to be swap
 	#check whether x and y in a bundle
 	if (int(x/b) != int(y/b)) or (x < 0) or (x >= s) or (y < 0) or (y >= s) or (x == y):
-		print('ERROR'),
+		print('ERROR')
 		return m
 	
 	for j in range(s):
@@ -72,7 +72,7 @@ def swap_row_b(m, x, y):
 	t = np.zeros(s)#use to buffer the data to be swap
 	#check x and y
 	if (x < 0) or (x >= b) or (y < 0) or (y >= b) or (x == y): 
-		print('ERROR'),
+		print('ERROR')
 		return m
 		
 	for k in range(b):
@@ -91,7 +91,7 @@ def swap_col(m, x, y):
 	t = np.zeros(s)#use to buffer the data to be swap
 	#check whether x and y in a bundle
 	if (int(x/b) != int(y/b)) or (x < 0) or (x >= s) or (y < 0) or (y >= s) or (x == y):
-		print('ERROR'),
+		print('ERROR')
 		return m
 	
 	for i in range(s):
@@ -109,7 +109,7 @@ def swap_col_b(m, x, y):
 	t = np.zeros(s)#use to buffer the data to be swap
 	#check x and y
 	if (x < 0) or (x >= b) or (y < 0) or (y >= b) or (x == y): 
-		print('ERROR'),
+		print('ERROR')
 		return m
 		
 	for k in range(b):
@@ -204,6 +204,6 @@ def generator(size, visible):
 ####test functions
 '''
 ans, que = generator(9, 0.9)
-print(ans),
-print(que),
+print(ans)
+print(que)
 '''

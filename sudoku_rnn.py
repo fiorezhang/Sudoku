@@ -9,8 +9,8 @@ from sudoku_dataset import load_data as load
 
 #global variables for sudoku training/test data set
 MATRIX_SIZE = 4
-TRAIN_VISIBLE = 0.7
-TEST_VISIBLE = 0.7
+TRAIN_VISIBLE = 0.9
+TEST_VISIBLE = 0.9
 TRAIN_SIZE = 1000
 TEST_SIZE = 100
 
@@ -38,10 +38,10 @@ def oh_decode(c):
 	return m
 
 #generate matrix from sudoku generator/dataset functions	
-print('-'*50),
-print('Generating Data... '),
-print('Matrix size: ', MATRIX_SIZE, ', visible(train): ', TRAIN_VISIBLE*100, '%, visible(test): ', TEST_VISIBLE*100, '%'),
-print('Train samples: ', TRAIN_SIZE, ', test samples: ', TEST_SIZE),
+print('-'*50)
+print('Generating Data... ')
+print('Matrix size: ', MATRIX_SIZE, ', visible(train): ', TRAIN_VISIBLE*100, '%, visible(test): ', TEST_VISIBLE*100, '%')
+print('Train samples: ', TRAIN_SIZE, ', test samples: ', TEST_SIZE)
 x_train_m, y_train_m = load(MATRIX_SIZE, TRAIN_VISIBLE, TRAIN_SIZE)
 x_train = np.zeros((TRAIN_SIZE, MATRIX_SIZE*MATRIX_SIZE, MATRIX_SIZE+1), dtype='int8')
 y_train = np.zeros((TRAIN_SIZE, MATRIX_SIZE*MATRIX_SIZE, MATRIX_SIZE+1), dtype='int8')
@@ -53,13 +53,13 @@ y_test = np.zeros((TEST_SIZE, MATRIX_SIZE*MATRIX_SIZE, MATRIX_SIZE+1), dtype='in
 for i in range (TEST_SIZE):
 	x_test[i], y_test[i] = oh_encode(x_test_m[i]), oh_encode(y_test_m[i])
 	
-#print(x_test_m.shape), 
-#print(x_test.shape),
-#print(x_test_m[0]),
-#print(x_test[0]),
-#print(y_test_m[0]),
-#print(y_test[0]),
-print('-'*50),	
+#print(x_test_m.shape)
+#print(x_test.shape)
+#print(x_test_m[0])
+#print(x_test[0])
+#print(y_test_m[0])
+#print(y_test[0])
+print('-'*50)
 
 #set parameters for keras model
 RNN = layers.LSTM
@@ -68,8 +68,8 @@ BATCH_SIZE = 128
 LAYERS = 1
 
 #Build the RNN model
-print('-'*50),
-print('Building Model... '),
+print('-'*50)
+print('Building Model... ')
 model = Sequential()
 #input the one-hot data transferred from a sudoku matrix, connect to a hidden layer
 model.add(RNN(HIDDEN_SIZE, input_shape=(MATRIX_SIZE*MATRIX_SIZE, MATRIX_SIZE+1)))
@@ -86,14 +86,14 @@ model.compile(loss='categorical_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 model.summary()
-print('-'*50),
+print('-'*50)
 
 #train the model and print information during the process
-print('-'*50), 
-print('Training...'),
+print('-'*50) 
+print('Training...')
 for iteration in range(1, 500):
-	print(),
-	print('-'*50),
+	print()
+	print('-'*50)
 	print('Iteration', iteration)
 	model.fit(x_train, y_train,
           batch_size=BATCH_SIZE,
@@ -107,22 +107,22 @@ for iteration in range(1, 500):
 		question = oh_decode(rowx[0])
 		correct = oh_decode(rowy[0])
 		guess = preds[0].reshape(question.shape[0], question.shape[1])	
-		print('Q','- '*25),
-		print(question),
-		print('A','- '*25),
-		print(correct),
-		print('G','- '*25),
-		print(guess),
-		print('- '*25),
+		print('Q','- '*25)
+		print(question)
+		print('A','- '*25)
+		print(correct)
+		print('G','- '*25)
+		print(guess)
+		print('- '*25)
 
 ####test functions
 '''
-print('Generate Data +'),
+print('Generate Data +')
 (x, y), (z, u) = load(9, 0.7, 10000, 1000)
-print('Generate Data -'),
+print('Generate Data -')
 o_y = oh_encode(y[0])
-print(y[0]),
-print(o_y),
+print(y[0])
+print(o_y)
 t = oh_decode(o_y)
 print(t)
 '''
